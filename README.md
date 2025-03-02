@@ -5,7 +5,7 @@ Library for Barco Video Wall Manager Processor
 
 - List out all commands
 - Make solution
-- Write basic http call
+  ~~- Write basic http call~~
 - Postman to test http call
 - Test http call
 - Build out enums for various command configurations
