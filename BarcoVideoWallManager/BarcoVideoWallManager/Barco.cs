@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace BarcoVideoWallManager;
 
-public class BarcoVideoWallManager
+public class Barco
 {
 
     public string IpAddress { get; set; }
@@ -13,7 +13,7 @@ public class BarcoVideoWallManager
     public bool Debug { get; set; }
     private static HttpClient? _httpClient;
 
-    public BarcoVideoWallManager(string ipAddress, string psk, bool debug)
+    public Barco(string ipAddress, string psk, bool debug)
     {
         IpAddress = ipAddress;
         Psk = psk;
@@ -38,7 +38,8 @@ public class BarcoVideoWallManager
         };
         var jsonPayload = JsonSerializer.Serialize(authPayload);
         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-        var response = await _httpClient?.PostAsync("auth/key", content)!;
+        var response = await _httpClient?.PostAsync("v1/auth/key", content)!;
+        Console.WriteLine(response);
         if (response.IsSuccessStatusCode)
         {
             if (!Debug) return true;
