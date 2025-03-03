@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarcoVideoWallManager", "BarcoVideoWallManager\BarcoVideoWallManager.csproj", "{63986782-4FC8-48A9-8BBA-A662AEB6EACD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BarcoVwM.UnitTests", "BarcoVwM.UnitTests\BarcoVwM.UnitTests.csproj", "{DC3C59FF-88E7-4BF6-BF57-49FAD00027C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{63986782-4FC8-48A9-8BBA-A662AEB6EACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63986782-4FC8-48A9-8BBA-A662AEB6EACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63986782-4FC8-48A9-8BBA-A662AEB6EACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC3C59FF-88E7-4BF6-BF57-49FAD00027C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC3C59FF-88E7-4BF6-BF57-49FAD00027C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC3C59FF-88E7-4BF6-BF57-49FAD00027C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC3C59FF-88E7-4BF6-BF57-49FAD00027C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

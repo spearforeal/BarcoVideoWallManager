@@ -1,0 +1,38 @@
+# Build results
+bin/
+obj/
+
+# Rider project files
+.idea/
+*.sln.iml
+
+# Visual Studio files (if using VS as well)
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.DotSettings
+*.sln.DotSettings.user
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# DotCover coverage results
+*.dotCover
+
+# Backup & temporary files
+*_i.c
+*_p.c
+*.cache
+*.log
+*.tmp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other configuration files
+*.local.json
