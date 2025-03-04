@@ -12,6 +12,21 @@ public class Barco
     public string Psk { get; set; }
     public bool Debug { get; set; }
     private static HttpClient? _httpClient;
+    private string Sid { get; set; }
+
+    private static readonly Dictionary<Endpoint, string> EndpointMap = new()
+    {
+        { Endpoint.AuthKey, "auth/key" },
+        { Endpoint.WallBrightness, "wall/brightness" }
+
+    };
+    public enum Endpoint
+    {
+        AuthKey,
+        WallBrightness
+        
+        
+    }
 
     public Barco(string ipAddress, string psk, bool debug)
     {
@@ -27,6 +42,7 @@ public class Barco
         _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
+    //TODO: Ideally, this method should not be this busy. Reduce. Use generics when possible
     public async Task<bool> AuthenticateAsync()
     {
 
@@ -39,21 +55,27 @@ public class Barco
         var jsonPayload = JsonSerializer.Serialize(authPayload);
         var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
         var response = await _httpClient?.PostAsync("v1/auth/key", content)!;
-        Console.WriteLine(response);
         if (response.IsSuccessStatusCode)
         {
+            if (response.Headers.TryGetValues("Set-Cookie", out var cookieValues))
+            {
+                foreach (var cookieValue in cookieValues)
+                {
+                    Sid = cookieValue;
+                    Console.WriteLine("Received Set-Cookie header: " + Sid);
+                }
+            }
+
             if (!Debug) return true;
             var responseBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Authentication successful: " + responseBody);
 
             return true; 
         }
-        else
-        {
-            var errorBody = await response.Content.ReadAsStringAsync();
-            await Console.Error.WriteLineAsync($"Authentication failed with status {response.StatusCode}: {errorBody}");
-            return false;
-        }
+
+        var errorBody = await response.Content.ReadAsStringAsync();
+        await Console.Error.WriteLineAsync($"Authentication failed with status {response.StatusCode}: {errorBody}");
+        return false;
 
 
     }
