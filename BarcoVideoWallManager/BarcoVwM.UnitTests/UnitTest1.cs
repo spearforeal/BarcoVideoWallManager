@@ -1,4 +1,6 @@
 
+using BarcoVideoWallManager;
+
 namespace BarcoVwM.UnitTests
 {
     [TestFixture]
@@ -8,18 +10,35 @@ namespace BarcoVwM.UnitTests
         private const string Ip = "439d9c21-93d9-4665-8d82-6353c8a13cce.mock.pstmn.io";
         private const string Psk = "jrYRtDchsg1xudxH";
 
-        [SetUp]
-        public void Setup()
+        [OneTimeSetUp]
+        public async Task OneTimeSetup()
         {
-            _vwm = new BarcoVideoWallManager.Barco(Ip, Psk, true);
-
+            _vwm = new Barco(Ip, Psk, true);
+            var authResult = await _vwm.AuthenticateAsync();
+            Assert.IsTrue(authResult, "Authentication must succeed in OneTimeSetup");
         }
 
         [Test]
         public async Task AuthenticationAsync_ReturnsTrue_OnSuccess()
         {
-            bool authResult = await _vwm.AuthenticateAsync();
-            Assert.IsTrue(authResult, "Authentication should succeed against the postman mock server");
+            var authResult = await _vwm.AuthenticateAsync();
+            Assert.That(authResult, Is.True, "Authentication should succeed against the postman mock server");
+        }
+
+        [Test]
+        public async Task GetWallBrightnessAsync_ReturnsTrue_WhenResponseIsValid()
+        {
+            var result = await _vwm.GetWallBrightnessAsync();
+            Assert.That(result, Is.True, "GetWallBrightnessAsync should return trufor a valid brightness respone");
+        }
+
+        [Test]
+        public async Task AuthThenGetBrightness_Succeeds()
+        {
+            var authResult = await _vwm.AuthenticateAsync();
+            Assert.IsTrue(authResult, "Auth should succeed");
+            var brightnessResult = await _vwm.GetWallBrightnessAsync();
+            Assert.IsTrue(brightnessResult, "Brightness call should succeed with a valid cookie");
         }
     }
 }
