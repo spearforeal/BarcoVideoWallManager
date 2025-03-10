@@ -3,6 +3,7 @@ bin/
 obj/
 
 # Rider project files
+BarcoVideoWallManager/.idea/
 .idea/
 *.sln.iml
 
