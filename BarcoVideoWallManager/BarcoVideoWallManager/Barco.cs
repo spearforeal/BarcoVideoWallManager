@@ -61,19 +61,39 @@ public class Barco
         await Console.Error.WriteLineAsync($"Authentication failed with status {response.StatusCode}: {errorBody}");
         return false;
     }
-
+    /// <summary>
+    /// Gets software version of video wall manager.
+    /// </summary>
     public async Task<bool> GetVwMVersionAsync()
     {
-        var versionResponse =
-            await SendGetRequestAsync<GeneralVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
+        var softwareVersionResponse =
+            await SendGetRequestAsync<BarcoSoftwareVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
                 CommandDictionary.General.GetVwMVersion);
-        if (versionResponse== null) return false;
+        if (softwareVersionResponse== null) return false;
         if (Debug)
         {
-            Console.WriteLine($"Kind: {versionResponse.Kind}");
-            Console.WriteLine($"Version: {versionResponse.Version}");
+            Console.WriteLine($"Kind: {softwareVersionResponse.Kind}");
+            Console.WriteLine($"Version: {softwareVersionResponse.Version}");
         }
 
+        return true;
+    }
+    /// <summary>
+    /// Gets current version of the api.
+    /// </summary>
+    /// <returns></returns>
+
+    public async Task<bool> GetApiVersionAsync()
+    {
+        var apiVersionResponse =
+            await SendGetRequestAsync<BarcoApiVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
+                CommandDictionary.General.GetApiVersion);
+        if (apiVersionResponse == null) return false;
+        if (Debug)
+        {
+            Console.WriteLine($"Kind: {apiVersionResponse.Kind}");
+            Console.WriteLine($"Version: {apiVersionResponse.Version}");
+        }
         return true;
     }
 
@@ -90,7 +110,6 @@ public class Barco
         }
 
         return true;
-
     }
 
     private  async Task<HttpResponseMessage> SendPostRequestAsync<TEnum, TParam>(
@@ -137,10 +156,7 @@ public class Barco
             var payloadObj = payloadBuilder(parameter);
             return JsonSerializer.Serialize(payloadObj);
         }
-        else
-        {
-            throw new ArgumentException($"No payload builder found for command: {command}", nameof(command));
-        }
+        throw new ArgumentException($"No payload builder found for command: {command}", nameof(command));
     }
 
 }

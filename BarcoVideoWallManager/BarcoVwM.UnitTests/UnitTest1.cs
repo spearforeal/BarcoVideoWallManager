@@ -45,5 +45,12 @@ namespace BarcoVwM.UnitTests
             Assert.That(result, Is.True, "GetVwMVersionAsync should return true for a valid response");
             
         }
+        [Test]
+        public async Task GetApiVersion_ReturnsTrue_WhenResponseIsValid()
+        {
+            var result = await _vwm.GetApiVersionAsync();
+            Assert.That(result, Is.True, "GetApiVersionAsync should return true for a valid response");
+            
+        }
     }
 }
