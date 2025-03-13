@@ -13,9 +13,9 @@ public class Barco
     public string IpAddress { get; set; }
     private string Psk { get; set; }
     public bool Debug { get; set; }
-    private static HttpClient? _httpClient;
+    private readonly HttpClient? _httpClient;
     private readonly CommandDictionary _commands = new();
-    private string Sid { get; set; }
+    private Session? _session;
     public Barco(string ipAddress, string psk, bool debug)
     {
         IpAddress = ipAddress;
@@ -46,8 +46,8 @@ public class Barco
             {
                 foreach (var cookieValue in cookieValues)
                 {
-                    Sid = cookieValue;
-                    Console.WriteLine("Received Set-Cookie header: " + Sid);
+                    _session = new Session(cookieValue, DateTime.UtcNow.AddMinutes(30));
+                    Console.WriteLine("Received Set-Cookie header: " + _session.Sid);
                 }
             }
 
@@ -57,28 +57,38 @@ public class Barco
 
             return true; 
         }
-
         var errorBody = await response.Content.ReadAsStringAsync();
         await Console.Error.WriteLineAsync($"Authentication failed with status {response.StatusCode}: {errorBody}");
         return false;
+    }
 
+    public async Task<bool> GetVwMVersionAsync()
+    {
+        var versionResponse =
+            await SendGetRequestAsync<GeneralVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
+                CommandDictionary.General.GetVwMVersion);
+        if (versionResponse== null) return false;
+        if (Debug)
+        {
+            Console.WriteLine($"Kind: {versionResponse.Kind}");
+            Console.WriteLine($"Version: {versionResponse.Version}");
+        }
 
+        return true;
     }
 
     public async Task<bool> GetWallBrightnessAsync()
     {
-        if (!string.IsNullOrEmpty(Sid))
-        {
-            _httpClient?.DefaultRequestHeaders.Remove("Cookie");
-            _httpClient?.DefaultRequestHeaders.Add("Cookie", Sid);
-        }
-
         var brightnessResponse =
             await SendGetRequestAsync<WallBrightnessResponse, CommandDictionary.Wall>(_commands.WallCommands,CommandDictionary.Wall.GetWallBrightness);
         if (brightnessResponse == null) return false;
-        Console.WriteLine($"Kind: {brightnessResponse.Kind}");
-        Console.WriteLine($"Current brightness: {brightnessResponse.Brightness}");
-        Console.WriteLine($"Minimum: {brightnessResponse.Minimum}, Maximum: {brightnessResponse.Maximum}");
+        if (Debug)
+        {
+            Console.WriteLine($"Kind: {brightnessResponse.Kind}");
+            Console.WriteLine($"Current brightness: {brightnessResponse.Brightness}");
+            Console.WriteLine($"Minimum: {brightnessResponse.Minimum}, Maximum: {brightnessResponse.Maximum}");
+        }
+
         return true;
 
     }
@@ -87,6 +97,7 @@ public class Barco
         Dictionary<TEnum, string> commandDictionary, Dictionary<TEnum, Func<TParam, object>> payloadDictionary,
         TEnum command, TParam parameter) where TEnum : notnull
     {
+        SessionCookieHeader();
         var endpoint = commandDictionary[command];
         var payload = BuildPayload(payloadDictionary, command, parameter);
         var content = new StringContent(payload, Encoding.UTF8, "application/json");
@@ -96,6 +107,7 @@ public class Barco
     private  async Task<TResponse?> SendGetRequestAsync<TResponse, TEnum>(Dictionary<TEnum, string> commandDictionary,
         TEnum command, params object[] parameters) where TEnum : notnull
     {
+        SessionCookieHeader();
         var endpointTemplate = commandDictionary[command];
         var endpoint = parameters.Length > 0 ? string.Format(endpointTemplate, parameters) : endpointTemplate;
         var response = await _httpClient?.GetAsync(endpoint)!;
@@ -103,6 +115,17 @@ public class Barco
         var responseBody = await response.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<TResponse>(responseBody);
 
+    }
+    /// <summary>
+    /// Ensures that the current session SID is added to the 'Cookie' header on every POST/GET request,
+    /// except for the Authenticate request.
+    /// If no valid session exists, no cookie is added.
+    /// </summary>
+    private void SessionCookieHeader()
+    {
+        if (_session == null || string.IsNullOrEmpty(_session.Sid)) return;
+        _httpClient?.DefaultRequestHeaders.Remove("Cookie");
+        _httpClient?.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", _session.Sid);
     }
 
 
@@ -224,4 +247,12 @@ public class CommandDictionary
 
     };
 
+
+}
+public class Session(string sid, DateTime expiresAt)
+{
+    public string Sid { get;  } = sid;
+    private DateTime ExpiresAt { get;  } = expiresAt;
+ 
+    public bool IsExpired() => DateTime.UtcNow >= ExpiresAt;
 }

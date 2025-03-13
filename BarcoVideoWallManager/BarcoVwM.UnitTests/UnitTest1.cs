@@ -17,21 +17,18 @@ namespace BarcoVwM.UnitTests
             var authResult = await _vwm.AuthenticateAsync();
             Assert.IsTrue(authResult, "Authentication must succeed in OneTimeSetup");
         }
-
         [Test]
         public async Task AuthenticationAsync_ReturnsTrue_OnSuccess()
         {
             var authResult = await _vwm.AuthenticateAsync();
             Assert.That(authResult, Is.True, "Authentication should succeed against the postman mock server");
         }
-
         [Test]
         public async Task GetWallBrightnessAsync_ReturnsTrue_WhenResponseIsValid()
         {
             var result = await _vwm.GetWallBrightnessAsync();
-            Assert.That(result, Is.True, "GetWallBrightnessAsync should return trufor a valid brightness respone");
+            Assert.That(result, Is.True, "GetWallBrightnessAsync should return true for a valid brightness response");
         }
-
         [Test]
         public async Task AuthThenGetBrightness_Succeeds()
         {
@@ -39,6 +36,14 @@ namespace BarcoVwM.UnitTests
             Assert.IsTrue(authResult, "Auth should succeed");
             var brightnessResult = await _vwm.GetWallBrightnessAsync();
             Assert.IsTrue(brightnessResult, "Brightness call should succeed with a valid cookie");
+        }
+
+        [Test]
+        public async Task GetVwMVersion_ReturnsTrue_WhenResponseIsValid()
+        {
+            var result = await _vwm.GetVwMVersionAsync();
+            Assert.That(result, Is.True, "GetVwMVersionAsync should return true for a valid response");
+            
         }
     }
 }
