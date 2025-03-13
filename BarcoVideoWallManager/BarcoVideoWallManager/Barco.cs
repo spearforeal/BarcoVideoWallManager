@@ -42,19 +42,10 @@ public class Barco
             CommandDictionary.General.Authenticate, Psk);
         if (response.IsSuccessStatusCode)
         {
-            if (response.Headers.TryGetValues("Set-Cookie", out var cookieValues))
-            {
-                foreach (var cookieValue in cookieValues)
-                {
-                    _session = new Session(cookieValue, DateTime.UtcNow.AddMinutes(30));
-                    Console.WriteLine("Received Set-Cookie header: " + _session.Sid);
-                }
-            }
-
+            ProcessCookies(response);
             if (!Debug) return true;
             var responseBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Authentication successful: " + responseBody);
-
             return true; 
         }
         var errorBody = await response.Content.ReadAsStringAsync();
@@ -145,6 +136,16 @@ public class Barco
         if (_session == null || string.IsNullOrEmpty(_session.Sid)) return;
         _httpClient?.DefaultRequestHeaders.Remove("Cookie");
         _httpClient?.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", _session.Sid);
+    }
+
+    private void ProcessCookies(HttpResponseMessage response)
+    {
+        if (!response.Headers.TryGetValues("Set-Cookie", out var cookieValues)) return;
+        foreach (var cookieValue in cookieValues)
+        {
+            _session = new Session(cookieValue, DateTime.UtcNow.AddMinutes(30));
+            Console.WriteLine("Received Set-Cookie header: " + _session.Sid);
+        }
     }
 
 
