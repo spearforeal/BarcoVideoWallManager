@@ -7,19 +7,20 @@ using System.Text.Json;
 
 namespace BarcoVideoWallManager;
 
-public class Barco
+public partial class Barco
 {
 
     public string IpAddress { get; set; }
     private string Psk { get; set; }
-    public bool Debug { get; set; }
+    private bool Debug { get; set; }
     private readonly HttpClient? _httpClient;
-    private readonly CommandDictionary _commands = new();
+    private readonly CommandDictionary _c = new();
     private Session? _session;
     public Barco(string ipAddress, string psk, bool debug)
     {
         IpAddress = ipAddress;
         Psk = psk;
+        Debug = debug;
         var handler = new HttpClientHandler { CookieContainer = new CookieContainer() };
         _httpClient = new HttpClient(handler)
         {
@@ -36,72 +37,6 @@ public class Barco
     }
 
     //TODO: Ideally, this method should not be this busy. Reduce. Use generics when possible
-    public async Task<bool> AuthenticateAsync()
-    {
-        var response = await SendPostRequestAsync(_commands.GeneralCommands, _commands.GeneralPayload,
-            CommandDictionary.General.Authenticate, Psk);
-        if (response.IsSuccessStatusCode)
-        {
-            ProcessCookies(response);
-            if (!Debug) return true;
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("Authentication successful: " + responseBody);
-            return true; 
-        }
-        var errorBody = await response.Content.ReadAsStringAsync();
-        await Console.Error.WriteLineAsync($"Authentication failed with status {response.StatusCode}: {errorBody}");
-        return false;
-    }
-    /// <summary>
-    /// Gets software version of video wall manager.
-    /// </summary>
-    public async Task<bool> GetVwMVersionAsync()
-    {
-        var softwareVersionResponse =
-            await SendGetRequestAsync<BarcoSoftwareVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
-                CommandDictionary.General.GetVwMVersion);
-        if (softwareVersionResponse== null) return false;
-        if (Debug)
-        {
-            Console.WriteLine($"Kind: {softwareVersionResponse.Kind}");
-            Console.WriteLine($"Version: {softwareVersionResponse.Version}");
-        }
-
-        return true;
-    }
-    /// <summary>
-    /// Gets current version of the api.
-    /// </summary>
-    /// <returns></returns>
-
-    public async Task<bool> GetApiVersionAsync()
-    {
-        var apiVersionResponse =
-            await SendGetRequestAsync<BarcoApiVersionResponse, CommandDictionary.General>(_commands.GeneralCommands,
-                CommandDictionary.General.GetApiVersion);
-        if (apiVersionResponse == null) return false;
-        if (Debug)
-        {
-            Console.WriteLine($"Kind: {apiVersionResponse.Kind}");
-            Console.WriteLine($"Version: {apiVersionResponse.Version}");
-        }
-        return true;
-    }
-
-    public async Task<bool> GetWallBrightnessAsync()
-    {
-        var brightnessResponse =
-            await SendGetRequestAsync<WallBrightnessResponse, CommandDictionary.Wall>(_commands.WallCommands,CommandDictionary.Wall.GetWallBrightness);
-        if (brightnessResponse == null) return false;
-        if (Debug)
-        {
-            Console.WriteLine($"Kind: {brightnessResponse.Kind}");
-            Console.WriteLine($"Current brightness: {brightnessResponse.Brightness}");
-            Console.WriteLine($"Minimum: {brightnessResponse.Minimum}, Maximum: {brightnessResponse.Maximum}");
-        }
-
-        return true;
-    }
 
     private  async Task<HttpResponseMessage> SendPostRequestAsync<TEnum, TParam>(
         Dictionary<TEnum, string> commandDictionary, Dictionary<TEnum, Func<TParam, object>> payloadDictionary,
@@ -136,6 +71,28 @@ public class Barco
         if (_session == null || string.IsNullOrEmpty(_session.Sid)) return;
         _httpClient?.DefaultRequestHeaders.Remove("Cookie");
         _httpClient?.DefaultRequestHeaders.TryAddWithoutValidation("Cookie", _session.Sid);
+    }
+
+    private async Task<bool> ProcessResponseAsync(HttpResponseMessage response, string operationName)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            if (Debug)
+            {
+                var responseBody = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"{operationName} successful: {responseBody}");
+            }
+
+        }
+        else
+        {
+            var errorBody = await response.Content.ReadAsStringAsync();
+            await Console.Error.WriteLineAsync($"{operationName} failed with status {response.StatusCode}: {errorBody}");
+            return false;
+        }
+
+        return true;
+
     }
 
     private void ProcessCookies(HttpResponseMessage response)

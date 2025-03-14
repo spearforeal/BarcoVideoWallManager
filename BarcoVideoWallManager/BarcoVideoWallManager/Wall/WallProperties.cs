@@ -14,3 +14,12 @@ public class WallBrightnessResponse
     public int Maximum { get; set;  }
 
 }
+
+public class SetWallBrightnessResponse
+{
+    [JsonPropertyName("kind")] public string Kind { get; set; }
+    [JsonPropertyName("issuedBy")] public string IssuedBy { get; set; }
+    [JsonPropertyName("result")] public string Result { get; set; }
+
+
+}
