@@ -49,8 +49,12 @@ public partial class Barco
         return await _httpClient!.PostAsync(endpoint, content);
     }
 
-    private  async Task<TResponse?> SendGetRequestAsync<TResponse, TEnum>(Dictionary<TEnum, string> commandDictionary,
-        TEnum command, params object[] parameters) where TEnum : notnull
+    private  async Task<TResponse?> SendGetRequestAsync<TResponse, TEnum>(Dictionary<TEnum,
+            string> commandDictionary,
+        TEnum command,
+        Func<TResponse, string>? debugFormatter = null,
+        params object[] parameters) 
+        where TEnum : notnull
     {
         SessionCookieHeader();
         var endpointTemplate = commandDictionary[command];
@@ -58,7 +62,13 @@ public partial class Barco
         var response = await _httpClient?.GetAsync(endpoint)!;
         response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<TResponse>(responseBody);
+        var deserializedResponse = JsonSerializer.Deserialize<TResponse>(responseBody);
+        if (Debug && debugFormatter != null && deserializedResponse != null)
+        {
+            Console.WriteLine(debugFormatter(deserializedResponse));
+        }
+
+        return deserializedResponse;
 
     }
     /// <summary>
@@ -101,7 +111,10 @@ public partial class Barco
         foreach (var cookieValue in cookieValues)
         {
             _session = new Session(cookieValue, DateTime.UtcNow.AddMinutes(30));
-            Console.WriteLine("Received Set-Cookie header: " + _session.Sid);
+            if (Debug)
+            {
+                Console.WriteLine("Received Set-Cookie header: " + _session.Sid);
+            }
         }
     }
 

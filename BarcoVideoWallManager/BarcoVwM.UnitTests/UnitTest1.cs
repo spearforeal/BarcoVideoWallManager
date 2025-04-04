@@ -6,7 +6,7 @@ namespace BarcoVwM.UnitTests
     [TestFixture]
     public class Tests
     {
-        private BarcoVideoWallManager.Barco _vwm;
+        private Barco _vwm;
         private const string Ip = "439d9c21-93d9-4665-8d82-6353c8a13cce.mock.pstmn.io";
         private const string Psk = "jrYRtDchsg1xudxH";
 
@@ -51,6 +51,19 @@ namespace BarcoVwM.UnitTests
             var result = await _vwm.GetApiVersionAsync();
             Assert.That(result, Is.True, "GetApiVersionAsync should return true for a valid response");
             
+        }
+        [Test]
+        public async Task SetWallBrightness_ReturnsTrue_On202()
+        {
+            var result = await _vwm.SetWallBrightnessAsync("12");
+            Assert.That(result, Is.True, "SetWallBrightnessAsync should return true for a 202 response");
+        }
+
+        [Test]
+        public async Task GetAbsoluteWallBrightness_ReturnsTrue_On202()
+        {
+            var result = await _vwm.GetAbsoluteWallBrightnessAsync();
+            Assert.That(result, Is.True, "GetAbsoluteWallBrightnessAsync should return true for a 202 response.");
         }
     }
 }

@@ -20,15 +20,10 @@ public partial class Barco
         var softwareVersionResponse =
             await SendGetRequestAsync<BarcoSoftwareVersionResponse, CommandDictionary.General>(
                 _c.GeneralCommands,
-                CommandDictionary.General.GetVwMVersion);
-        if (softwareVersionResponse == null) return false;
-        if (Debug)
-        {
-            Console.WriteLine($"Kind: {softwareVersionResponse.Kind}");
-            Console.WriteLine($"Version: {softwareVersionResponse.Version}");
-        }
+                CommandDictionary.General.GetVwMVersion, response => $"Kind: {response.Kind}/n" + $"Version: {response.Version}" );
 
-        return true;
+        return softwareVersionResponse != null;
+
     }
 
     /// <summary>
@@ -39,14 +34,7 @@ public partial class Barco
     {
         var apiVersionResponse =
             await SendGetRequestAsync<BarcoApiVersionResponse, CommandDictionary.General>(_c.GeneralCommands,
-                CommandDictionary.General.GetApiVersion);
-        if (apiVersionResponse == null) return false;
-        if (Debug)
-        {
-            Console.WriteLine($"Kind: {apiVersionResponse.Kind}");
-            Console.WriteLine($"Version: {apiVersionResponse.Version}");
-        }
-
-        return true;
+                CommandDictionary.General.GetApiVersion, response => $"Kind: {response.Kind}\n" + $"Version: {response.Version}");
+        return apiVersionResponse != null;
     }
 }
