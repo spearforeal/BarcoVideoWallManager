@@ -26,54 +26,41 @@ public class AbsoluteWallBrightnessResponse
     public int MaximumNits { get; set;  }
 
 }
-
 public class WallPowerStateResponse
 {
     [JsonPropertyName("power")] public string Power { get; }
     
 }
-
 public enum WallPowerState
 {
     On,
     Idle,
     Standby
-    
 }
-
 public class SetWallBrightnessResponse
 {
     [JsonPropertyName("kind")] public string Kind { get; set; }
     [JsonPropertyName("issuedBy")] public string IssuedBy { get; set; }
     [JsonPropertyName("result")] public string Result { get; set; }
-
-
 }
-
 public class WallPresetResponse
 {
     [JsonPropertyName("kind")] public string Kind { get; }
     [JsonPropertyName("presets")] public List<WallPreset> Presets { get; set; }
     
 }
-
 public class WallPreset
 {
     [JsonPropertyName("kind")] public string Kind { get; }
     [JsonPropertyName("id")] public string Id { get; }
     [JsonPropertyName("name")] public string Name { get; }
     [JsonPropertyName("active")] public bool Active { get; }
-    
 }
-
 public class WallTemperatureResponse
 {
     [JsonPropertyName("kind")] public string Kind { get; set; }
     [JsonPropertyName("processors")] public List<ProcessorTemperature> Processors { get; set; }
     [JsonPropertyName("displays")] public List<DisplaysTemperatures> Displays { get; set; }
-
-
-
 }
 
 public class ProcessorTemperature
@@ -83,16 +70,12 @@ public class ProcessorTemperature
     [JsonPropertyName("temperature")] public ProcessorTemperatureValues Temperatures { get; set; }
 
 }
-
 public class DisplaysTemperatures
 {
     [JsonPropertyName("id")] public string Id { get; set; }
     [JsonPropertyName("position")] public Position Position { get; set; }
     [JsonPropertyName("temperatures")] public DisplayTemperatureValues Temperatures { get; set; }
-    
-
 }
-
 public class Position
 {
     [JsonPropertyName("column")] public int Column { get; set; }
@@ -115,6 +98,41 @@ public class DisplayTemperatureValues
     [JsonPropertyName("right")] public double? Right { get; set;  }
     [JsonPropertyName("lcm")] public double? Lcm { get; set;  }
     [JsonPropertyName("inputBoard")] public double? InputBoard { get; set;  }
-    
 }
+public class WallAlertResponse
+{
+    [JsonPropertyName("kind")] public string Kind { get; set; }
+    [JsonPropertyName("processors")] public ProcessorWallAlert Processors { get; set; }
+    [JsonPropertyName("displays")] public DisplayWallAlert Displays { get; set; }
+}
+public class ProcessorWallAlert
+{
+    [JsonPropertyName("id")] public string Id { get; }
+    [JsonPropertyName("refNumber")] public int RefNumber { get; }
+    [JsonPropertyName("alerts")] public ProcessorWallAlertValues AlertValues { get; set; }
+}
+public class ProcessorWallAlertValues
+{
+    [JsonPropertyName("code")] public string Code { get; set; }
+    [JsonPropertyName("type")] public string Type { get; set; }
+}
+
+public class DisplayWallAlert
+{
+    [JsonPropertyName("id")] public string Id { get; set; }
+    [JsonPropertyName("position")] public DisplayAlertPosition AlertPosition { get; set; }
+    [JsonPropertyName("alerts")] public DisplayAlertValues AlertValues { get; set; }
+}
+public class DisplayAlertPosition
+{
+    [JsonPropertyName("column")]public string Column { get; set; }
+    [JsonPropertyName("row")]public string Row { get; set; }
+}
+
+public class DisplayAlertValues
+{
+    [JsonPropertyName("code")] public string Code { get; set; }
+    [JsonPropertyName("type")] public string Type { get; set; }
+}
+    
 

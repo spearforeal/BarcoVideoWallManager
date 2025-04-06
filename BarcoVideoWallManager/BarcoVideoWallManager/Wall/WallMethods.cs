@@ -182,4 +182,17 @@ public partial class Barco
                 });
         return response != null;
     }
+
+    public async Task<bool> GetWallAlertAsync()
+    {
+        var response = await SendGetRequestAsync<WallAlertResponse, CommandDictionary.Wall>(_c.WallCommands,
+            CommandDictionary.Wall.GetWallAlert,
+            alertResponse =>
+            {
+                var sb = new System.Text.StringBuilder();
+                
+
+            });
+
+    }
 }
