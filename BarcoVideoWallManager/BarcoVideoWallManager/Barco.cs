@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Security.AccessControl;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BarcoVideoWallManager;
 
@@ -242,4 +243,18 @@ public class Session(string sid, DateTime expiresAt)
     private DateTime ExpiresAt { get;  } = expiresAt;
  
     public bool IsExpired() => DateTime.UtcNow >= ExpiresAt;
+}
+
+public abstract class ApiResponse
+{
+    [JsonPropertyName("kind")] public string? Kind { get; set; }
+}
+
+public static class ApiResponseKind
+{
+    public const string VwmVersion = "groups#wall#version";
+    public const string ApiVersion = "groups#api#version";
+    public const string Authenticate = "auth#token";
+    
+
 }

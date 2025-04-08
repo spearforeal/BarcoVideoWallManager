@@ -2,10 +2,8 @@ using System.Text.Json.Serialization;
 
 namespace BarcoVideoWallManager;
 
-public class WallBrightnessResponse
+public class WallBrightnessResponse: ApiResponse
 {
-    [JsonPropertyName("kind")]
-    public string? Kind { get; set; }
     [JsonPropertyName("brightness")]
     public int BrightnessPercentage { get; set; }
     [JsonPropertyName("minimum")]
