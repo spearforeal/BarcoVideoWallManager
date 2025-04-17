@@ -17,7 +17,13 @@ namespace BarcoVideoWallManager
             if (!success) return false;
             ProcessCookies(response);
             return true;
-
+        }
+        public async Task<GetWallNameResponse?> GetWallNameAsync()
+        {
+            var response = await SendGetRequestAsync<GetWallNameResponse, CommandDictionary.Wall>(_c.WallCommands,
+                CommandDictionary.Wall.GetWallName,
+                nameResponse => $"Kind: {nameResponse.Kind}\n Name: {nameResponse.Name}");
+            return response;
         }
     }
 }
