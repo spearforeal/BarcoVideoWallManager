@@ -2,6 +2,12 @@ namespace BarcoVideoWallManager;
 
 public partial class Barco
 {
+    /// <summary>
+    /// Gets an array of alerts for devices.
+    /// Processor array will not be present in case of LCD/RPC.
+    /// Display array will always be available for all wall types.
+    /// </summary>
+    /// <returns></returns>
     public async Task<WallAlertResponse?> GetWallAlertAsync()
     {
         var response = await SendGetRequestAsync<WallAlertResponse, CommandDictionary.Wall>(_c.WallCommands,

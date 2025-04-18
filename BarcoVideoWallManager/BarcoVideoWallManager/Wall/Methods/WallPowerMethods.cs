@@ -2,6 +2,10 @@ namespace BarcoVideoWallManager;
 
 public partial class Barco
 {
+    /// <summary>
+    /// Retrieves the current power state of the video wall.
+    /// </summary>
+    /// <returns> A <see cref="WallPowerStateResponse"/> containing the wall's power state, or null if the request fails.</returns>
     public async Task<WallPowerStateResponse?> GetWallPowerStateAsync()
     {
         var response =
@@ -11,7 +15,7 @@ public partial class Barco
     }
 
     /// <summary>
-    /// Sets power state.
+    /// Sets power state of the video wall.
     /// </summary>
     /// <param name="newState">The desired power state. Accepted values are: On, Idle, Standby.</param>
     /// <returns>True is the operation succeeded, otherwise false.</returns>

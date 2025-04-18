@@ -49,16 +49,31 @@ public partial class Barco
     /// <summary>
     /// Set the brightness of the wall in nits
     /// </summary>
-    /// <param name="value"></param>
+    /// <param name="value">Will contain the brightness
+    ///value in nits (cd/m²). If value is integer but out or range then system will set the max if
+    ///above or will set min if it's below the range</param>
     /// <returns>return true upon successful response.</returns>
 
     public async Task<bool> SetAbsoluteWallBrightnessAsync(string value)
     {
         var response = await SendPostRequestAsync(_c.WallCommands, _c.WallPayload,
-            CommandDictionary.Wall.GetAbsoluteWallBrightness, value);
+            CommandDictionary.Wall.SetAbsoluteWallBrightness, value);
         var success = await ProcessResponseAsync(response, CommandDictionary.Wall.SetAbsoluteWallBrightness.ToString());
         if (!success) return false;
         ProcessCookies(response);
         return true;
+    }
+
+    /// <summary>
+    /// Set the brightness of the wall in nits
+    /// </summary>
+    /// <param name="value">Will contain the brightness
+    ///value in nits (cd/m²). If value is integer but out or range then system will set the max if
+    ///above or will set min if it's below the range</param>
+    /// <returns>return true upon successful response.</returns>
+    public async Task<bool> SetAbsoluteWallBrightnessAsync(int value)
+    {
+        return await SetAbsoluteWallBrightnessAsync(value.ToString());
+
     }
 }

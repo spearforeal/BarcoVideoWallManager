@@ -2,6 +2,10 @@ namespace BarcoVideoWallManager;
 
 public partial class Barco
 {
+    /// <summary>
+    /// Retrieves the current wall device configuration, including processor and display details.
+    /// </summary>
+    /// <returns>A <see cref="WallDeviceResponse"/> containing device processor and display collections, or null if the request fails.</returns>
     public async Task<WallDeviceResponse?> GetWallDeviceAsync()
     {
         var response = await SendGetRequestAsync<WallDeviceResponse, CommandDictionary.Wall>(_c.WallCommands,
