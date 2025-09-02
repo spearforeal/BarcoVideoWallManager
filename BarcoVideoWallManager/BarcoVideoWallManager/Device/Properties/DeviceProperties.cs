@@ -44,3 +44,33 @@ public class DeviceTemperatureItem
     [JsonPropertyName("temperatures")]
     public Dictionary<string, double>? Temperatures { get; set; }
 }
+
+public class GetDeviceFanSpeedResponse
+{
+    [JsonPropertyName("kind")] public string? Kind { get; }
+
+    [JsonPropertyName("id")]
+    public string? Id { get;  }
+
+    [JsonPropertyName("refNumber")] 
+    public int? RefNumber { get;  }
+
+    [JsonPropertyName("position")] 
+    public PositionInfo? Position { get; }
+
+    [JsonPropertyName("speed")] 
+    public int? Speed { get; }
+}
+
+public class GetDevicesFanSpeedResponse
+{
+    [JsonPropertyName("kind")] public string? Kind { get; }
+    [JsonPropertyName("processors")] public List<DeviceFanSpeedItem>? Processors { get; }
+}
+
+public class DeviceFanSpeedItem
+{
+    [JsonPropertyName("id")] public string? Id { get; }
+    [JsonPropertyName("refNumber")] public int? RefNumber { get; }
+    [JsonPropertyName("speed")] public int? Speed { get; }
+}

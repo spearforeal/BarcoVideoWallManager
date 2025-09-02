@@ -50,7 +50,7 @@ public partial class Barco
         return await _httpClient!.PostAsync(endpoint, content);
     }
 
-    private  async Task<TResponse?> SendGetRequestAsync<TResponse, TEnum>(Dictionary<TEnum,
+    private async Task<TResponse?> SendGetRequestAsync<TResponse, TEnum>(Dictionary<TEnum,
             string> commandDictionary,
         TEnum command,
         Func<TResponse, string>? debugFormatter = null,

@@ -44,4 +44,19 @@ public partial class Barco
         return response;
     }
 
+    public async Task<GetDeviceFanSpeedResponse?> GetDeviceFanSpeedAsync(string deviceId)
+    {
+        var response =
+            await SendGetRequestAsync<GetDeviceFanSpeedResponse, CommandDictionary.Device>(
+                _c.DeviceCommands,
+                CommandDictionary.Device.GetDeviceFanSpeed, 
+                fanSpeedResponse =>
+                $"Kind: {fanSpeedResponse.Kind}, " +
+                $"Ref#: {fanSpeedResponse.RefNumber }, " + 
+                $"Position: (Row:{fanSpeedResponse.Position?.Row}, Column:{fanSpeedResponse.Position?.Column}), " + 
+                $"Speed: {fanSpeedResponse.Speed}",
+                deviceId);
+            return response;
+    }
+
 }
